@@ -1,3 +1,5 @@
+.env
+.m2
 .gradle
 target/
 build/

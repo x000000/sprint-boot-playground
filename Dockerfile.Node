@@ -1,0 +1,8 @@
+FROM node:14.19-alpine
+
+WORKDIR app
+
+COPY package*.json vite.config.js vue.build.sh ./
+COPY src/main/resources/assets ./src/
+
+CMD ./vue.build.sh

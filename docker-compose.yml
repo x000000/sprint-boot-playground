@@ -1,0 +1,47 @@
+version: '3'
+services:
+  db:
+    image: mariadb:10.5.15
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MARIADB_DATABASE=$DB_NAME
+      - MARIADB_ROOT_PASSWORD=$DB_ROOT_PASSWORD
+    ports:
+      - $DB_LOCAL_PORT:$DB_DOCKER_PORT
+    volumes:
+      - db:/var/lib/mysql
+
+  node:
+    build:
+      context: './'
+      dockerfile: Dockerfile.Node
+    environment:
+      - VUE_SRC=./src
+      - VUE_OUT=./dist
+    restart: on-failure
+    volumes:
+      - public:/app/dist
+
+  app:
+    depends_on:
+      - db
+      - node
+    build: ./
+    restart: on-failure
+    env_file: ./.env
+    ports:
+      - $APP_LOCAL_PORT:$APP_DOCKER_PORT
+    environment:
+      - DB_JDBC=jdbc:mysql://db:$DB_DOCKER_PORT/$DB_NAME?useSSL=false
+      - DB_USER=$DB_USER
+      - DB_PASS=$DB_PASS
+    volumes:
+      - .m2:/root/.m2
+      - public:/app/src/main/resources/assets/public
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
+  public:
