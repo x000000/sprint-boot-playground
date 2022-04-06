@@ -58,4 +58,5 @@ coverage
 *.local
 
 # Frontend dist
-/src/main/resources/public/
+# FIXME: there is a bug in Vite which causing build output not working in docker. We have to pre-build fronent for now
+# /src/main/resources/public/
